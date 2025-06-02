@@ -1,13 +1,20 @@
-// Page1.jsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './FormWrapper.css';
 
 const Page1 = ({ formData, handleChange }) => {
+  const navigate = useNavigate();
+
   const timeSlots = [
     "7:00 - 8:00", "8:00 - 9:00", "9:00 - 10:00", "10:00 - 11:00",
     "11:00 - 12:00", "12:00 - 1:00", "1:00 - 2:00", "2:00 - 3:00",
     "3:00 - 4:00", "4:00 - 5:00", "5:00 - 6:00", "6:00 - 7:00",
   ];
+
+  const handleNext = () => {
+    // You can also validate formData here if needed
+    navigate('/page2');
+  };
 
   return (
     <div className="form-wrapper">
@@ -72,6 +79,16 @@ const Page1 = ({ formData, handleChange }) => {
           ))}
         </tbody>
       </table>
+
+      {/* Navigation Button */}
+      <div className="navigation-controls" style={{ marginTop: '2rem', textAlign: 'right' }}>
+        <button
+          onClick={handleNext}
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Next →
+        </button>
+      </div>
     </div>
   );
 };

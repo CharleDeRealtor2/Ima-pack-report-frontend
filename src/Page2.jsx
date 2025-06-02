@@ -1,9 +1,18 @@
-// Page2.jsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './FormWrapper.css';
 
 const Page2 = ({ formData, handleChange }) => {
+  const navigate = useNavigate();
   const rows = Array.from({ length: 30 }, (_, i) => i + 1);
+
+  const handleNext = () => {
+    navigate('/page3');
+  };
+
+  const handleBack = () => {
+    navigate('/page1');
+  };
 
   return (
     <div className="form-wrapper">
@@ -35,6 +44,23 @@ const Page2 = ({ formData, handleChange }) => {
           ))}
         </tbody>
       </table>
+
+      {/* Navigation Buttons */}
+      <div className="navigation-controls" style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between' }}>
+        <button
+          onClick={handleBack}
+          className="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 transition"
+        >
+          ← Back
+        </button>
+
+        <button
+          onClick={handleNext}
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Next →
+        </button>
+      </div>
     </div>
   );
 };

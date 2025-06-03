@@ -9,7 +9,7 @@ const Login = ({ goToRegister, onLoginSuccess }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { username, password });
+      const res = await axios.post('https://ima-pack-report-backend.onrender.com/api/auth/login', { username, password });
       localStorage.setItem('token', res.data.token);
       alert('Login successful');
       onLoginSuccess();
@@ -43,7 +43,7 @@ const Login = ({ goToRegister, onLoginSuccess }) => {
           Login
         </button>
         <p className="text-sm text-center">
-          Don’t have an account? <span className="text-green-600 cursor-pointer" onClick={goToRegister}>Register</span>
+          Don’t have an account? <span className="text-green-600 cursor-pointer" onClick={goToRegister}><Link to="/register">Register</Link></span>
         </p>
       </form>
     </div>

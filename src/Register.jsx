@@ -9,7 +9,7 @@ const Register = ({ goToLogin }) => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/auth/register', { username, password });
+      await axios.post('https://ima-pack-report-backend.onrender.com/api/auth/register', { username, password });
       alert('Registration successful. You can now login.');
       goToLogin();
     } catch (err) {
@@ -42,7 +42,7 @@ const Register = ({ goToLogin }) => {
           Register
         </button>
         <p className="text-sm text-center">
-          Already have an account? <span className="text-blue-600 cursor-pointer" onClick={goToLogin}>Login</span>
+          Already have an account? <span className="text-blue-600 cursor-pointer" onClick={goToLogin}><Link to="/login">Login</Link></span>
         </p>
       </form>
     </div>

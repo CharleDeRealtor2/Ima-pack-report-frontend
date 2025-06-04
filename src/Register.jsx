@@ -4,21 +4,23 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const Register = ({ goToLogin }) => {
-  const [username, setUsername] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       await axios.post('https://ima-pack-report-backend.onrender.com/api/auth/register', {
-        username,
+        fullName,
+        email,
         password,
       });
       alert('Registration successful. You can now login.');
-      goToLogin(); // If you're using this for routing programmatically
+      if (goToLogin) goToLogin(); // Optional callback
     } catch (err) {
       console.error('Registration error:', err.response?.data || err.message);
-      alert('Registration failed: Username may already exist.');
+      alert('Registration failed: ' + (err.response?.data?.msg || 'Please try again.'));
     }
   };
 
@@ -28,10 +30,18 @@ const Register = ({ goToLogin }) => {
       <form onSubmit={handleRegister} className="space-y-3">
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Full Name"
           className="w-full px-3 py-2 border rounded"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          className="w-full px-3 py-2 border rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input

@@ -1,11 +1,12 @@
-// src/Login.jsx
+// Login.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-const Login = ({ onLoginSuccess }) => {
+const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -15,16 +16,15 @@ const Login = ({ onLoginSuccess }) => {
         password,
       });
       localStorage.setItem('token', res.data.token);
-      alert('Login successful');
-      onLoginSuccess();
+      navigate('/page1');
     } catch (err) {
-      console.error('Login error:', err.response?.data || err.message);
-      alert('Login failed: Invalid credentials or server error.');
+      console.error('Login error:', err);
+      alert('Invalid credentials');
     }
   };
 
   return (
-    <div className="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md space-y-4">
+    <div className="p-6 max-w-sm mx-auto bg-white rounded shadow space-y-4">
       <h2 className="text-xl font-bold text-center">Login</h2>
       <form onSubmit={handleLogin} className="space-y-3">
         <input
@@ -45,13 +45,13 @@ const Login = ({ onLoginSuccess }) => {
         />
         <button
           type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
           Login
         </button>
         <p className="text-sm text-center">
-          Don’t have an account?{' '}
-          <Link to="/register" className="text-green-600 hover:underline">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-blue-600 hover:underline">
             Register
           </Link>
         </p>
@@ -61,3 +61,4 @@ const Login = ({ onLoginSuccess }) => {
 };
 
 export default Login;
+

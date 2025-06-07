@@ -9,6 +9,11 @@ const Page3 = ({ formData, handleChange, handleSubmit, goBack }) => {
     handleSubmit();
   };
 
+  const logout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/login'; // Redirect to login
+  };
+
   const downloadFile = async (type) => {
     const token = localStorage.getItem('token');
     const url = `${API_BASE_URL}/export/${type}`;
@@ -174,6 +179,11 @@ const Page3 = ({ formData, handleChange, handleSubmit, goBack }) => {
         <button onClick={() => downloadFile('pdf')} style={styles.button}>Download PDF</button>
         <button onClick={() => downloadFile('excel')} style={styles.button}>Download Excel</button>
       </div>
+
+      {/* Logout Button */}
+      <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+        <button onClick={logout} style={styles.logoutButton}>Logout</button>
+      </div>
     </>
   );
 };
@@ -188,7 +198,17 @@ const styles = {
     borderRadius: '6px',
     cursor: 'pointer',
     fontWeight: 'bold',
-  }
+  },
+  logoutButton: {
+    marginTop: '1.5rem',
+    padding: '0.6rem 2rem',
+    backgroundColor: '#dc3545',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+  },
 };
 
 export default Page3;

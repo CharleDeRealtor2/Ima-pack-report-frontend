@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
@@ -12,7 +12,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post('https://ima-pack-report-backend.onrender.com/api/auth/login', {
-        username,
+        email,
         password,
       });
       localStorage.setItem('token', res.data.token);
@@ -28,11 +28,11 @@ const Login = () => {
       <h2 className="text-xl font-bold text-center">Login</h2>
       <form onSubmit={handleLogin} className="space-y-3">
         <input
-          type="text"
-          placeholder="Username"
+          type="email"
+          placeholder="Email"
           className="w-full px-3 py-2 border rounded"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
@@ -61,4 +61,3 @@ const Login = () => {
 };
 
 export default Login;
-

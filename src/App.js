@@ -103,7 +103,7 @@ const App = () => {
   const handleSubmit = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://ima-pack-report-backend.onrender.com', formData, {
+      await axios.post('https://ima-pack-report-backend.onrender.com/api/submit-report', formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Report submitted successfully!');

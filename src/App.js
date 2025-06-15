@@ -7,7 +7,7 @@ import Page3 from './Page3.jsx';
 import Login from './Login.jsx';
 import Register from './Register.jsx';
 import axios from 'axios';
-import spinner from './spinner.jsx'; // You must have a spinner component (see below)
+import Spinner from './Spinner.jsx'; // You must have a spinner component (see below)
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 

@@ -1,10 +1,10 @@
-// ExportButtons.jsx
+// Export.jsx
 import React, { useState } from 'react';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import Spinner from './components/Spinner';
+import Spinner from './Spinner';
 
 const ExportButtons = ({ data }) => {
   const [loading, setLoading] = useState(false);

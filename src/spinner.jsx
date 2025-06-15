@@ -1,6 +1,6 @@
 // Spinner.jsx
 import React from 'react';
-import './Spinner.css'; // Create this for styling if needed
+import './Spinner.css'; //Create this for styling if needed
 
 const spinner = () => (
   <div className="spinner-overlay">
@@ -8,4 +8,4 @@ const spinner = () => (
   </div>
 );
 
-export default spinner;
+export default Spinner;

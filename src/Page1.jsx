@@ -1,96 +1,140 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import './FormWrapper.css';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
-const Page1 = ({ formData, handleChange }) => {
-  const navigate = useNavigate();
+export const exportToPDF = (formData) => {
+    const doc = new jsPDF();
 
-  const timeSlots = [
-    "7:00 - 8:00", "8:00 - 9:00", "9:00 - 10:00", "10:00 - 11:00",
-    "11:00 - 12:00", "12:00 - 1:00", "1:00 - 2:00", "2:00 - 3:00",
-    "3:00 - 4:00", "4:00 - 5:00", "5:00 - 6:00", "6:00 - 7:00",
-  ];
+    doc.setFontSize(14);
+    doc.text('IMA PACK REPORT', 14, 15);
+    doc.setFontSize(10);
 
-  const handleNext = () => {
-    // You can also validate formData here if needed
-    navigate('/page2');
-  };
+    const basicInfo = [
+        ['Date', formData.date],
+        ['Factory', formData.factory],
+        ['Machine Number', formData.machineNumber],
+        ['Product Type', formData.productType],
+        ['Shift', formData.shift],
+    ];
 
-  return (
-    <div className="form-wrapper">
-      <h1>PROMASIDOR NIGERIA LIMITED</h1>
-      <h2>IMA PACK REPORT</h2>
-      <p className="doc-no">Document No : PNG-FSMS-ONGAPRD-FRM-02</p>
+    doc.autoTable({
+        head: [['Field', 'Value']],
+        body: basicInfo,
+        startY: 20,
+    });
 
-      <label>Date *</label>
-      <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+    // Page 1 Table - Hourly Readings
+    const hourlyTable = [
+        ['Time', 'Machine Counter', 'Runtime (Minutes)', 'Machine Speed', 'Avg Weight Before', 'Avg Weight After'],
+    ];
 
-      <label>Factory *</label>
-      <select name="factory" value={formData.factory} onChange={handleChange} required>
-        <option value="">Please Select</option>
-        <option value="Onga 1">Onga 1</option>
-        <option value="Onga 2">Onga 2</option>
-        <option value="Onga 3">Onga 3</option>
-        <option value="Onga 4">Onga 4</option>
-        <option value="Onga 5">Onga 5</option>
-      </select>
+    for (let i = 0; i < 12; i++) {
+        hourlyTable.push([
+            `${7 + i}:00 - ${8 + i}:00`,
+            '', '', '', '', '', // If you eventually wire inputs, plug them here
+        ]);
+    }
 
-      <label>Machine Number *</label>
-      <input type="text" name="machineNumber" value={formData.machineNumber} onChange={handleChange} required />
+    doc.autoTable({
+        head: [hourlyTable[0]],
+        body: hourlyTable.slice(1),
+        startY: doc.lastAutoTable.finalY + 10,
+        theme: 'striped',
+        headStyles: { fillColor: [22, 160, 133] },
+    });
 
-      <label>Product Type *</label>
-      <select name="productType" value={formData.productType} onChange={handleChange} required>
-        <option value="">Please Select</option>
-        <option value="Beef">Beef</option>
-        <option value="Chicken">Chicken</option>
-      </select>
+    // Page 2 Table - Issues
+    const issuesTable = [
+        ['#', 'Description', 'What Was Done', 'Start', 'End', 'Downtime', 'Repair?', 'Comment', 'Technician'],
+    ];
 
-      <label>Shift *</label>
-      <select name="shift" value={formData.shift} onChange={handleChange} required>
-        <option value="">Please Select</option>
-        <option value="Day A">Day A</option>
-        <option value="Day B">Day B</option>
-        <option value="Night A">Night A</option>
-        <option value="Night B">Night B</option>
-      </select>
+    for (let i = 1; i <= 30; i++) {
+        issuesTable.push([i, '', '', '', '', '', '', '', '']); // Can plug data later
+    }
 
-      <h3>Machine Hourly Reading, Machine Speed and Cube Weight (Hourly) *</h3>
-      <table className="table-grid">
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Machine Counter</th>
-            <th>Runtime (Minutes)</th>
-            <th>Machine Speed</th>
-            <th>Average Weight Before</th>
-            <th>Average Weight After</th>
-          </tr>
-        </thead>
-        <tbody>
-          {timeSlots.map((slot, index) => (
-            <tr key={index}>
-              <td>{slot}</td>
-              {[...Array(5)].map((_, col) => (
-                <td key={col}>
-                  <input type="text" name={`page1-row-${index}-col-${col}`} />
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    doc.autoTable({
+        head: [issuesTable[0]],
+        body: issuesTable.slice(1),
+        startY: doc.lastAutoTable.finalY + 10,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [44, 62, 80] },
+    });
 
-      {/* Navigation Button */}
-      <div className="navigation-controls" style={{ marginTop: '2rem', textAlign: 'right' }}>
-        <button
-          onClick={handleNext}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
-        >
-          Next →
-        </button>
-      </div>
-    </div>
-  );
+    // Page 3 Fields
+    const summaryInfo = [
+        ['Total Runtime', formData.totalRuntime],
+        ['Total Downtime', formData.totalDowntime],
+        ['OEE', formData.oee],
+        ['Availability Rate', formData.availabilityRate],
+        ['Performance Rate', formData.performanceRate],
+        ['Quality Rate', formData.qualityRate],
+        ['Total Counter Reading', formData.totalCounterReading],
+        ['IMA Reel Waste', formData.imaReelWaste],
+        ['IMA Rejected Reel', formData.imaRejectedReel],
+        ['Operator', `${formData.operatorFirstName} ${formData.operatorLastName}`],
+        ['Incoming Operator', `${formData.incomingFirstName} ${formData.incomingLastName}`],
+    ];
+
+    doc.autoTable({
+        head: [['Metric', 'Value']],
+        body: summaryInfo,
+        startY: doc.lastAutoTable.finalY + 10,
+    });
+
+    doc.save('IMA_Pack_Report.pdf');
 };
 
-export default Page1;
+export const exportToExcel = (formData) => {
+    const wb = XLSX.utils.book_new();
+
+    // Sheet 1 - Basic Info
+    const sheet1 = [
+        ['Field', 'Value'],
+        ['Date', formData.date],
+        ['Factory', formData.factory],
+        ['Machine Number', formData.machineNumber],
+        ['Product Type', formData.productType],
+        ['Shift', formData.shift],
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheet1), 'Basic Info');
+
+    // Sheet 2 - Hourly Readings
+    const hourly = [
+        ['Time', 'Machine Counter', 'Runtime (Minutes)', 'Machine Speed', 'Avg Weight Before', 'Avg Weight After'],
+    ];
+    for (let i = 0; i < 12; i++) {
+        hourly.push([`${7 + i}:00 - ${8 + i}:00`, '', '', '', '', '']);
+    }
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(hourly), 'Hourly Readings');
+
+    // Sheet 3 - Issues
+    const issues = [
+        ['#', 'Description', 'What Was Done', 'Start', 'End', 'Downtime', 'Repair?', 'Comment', 'Technician'],
+    ];
+    for (let i = 1; i <= 30; i++) {
+        issues.push([i, '', '', '', '', '', '', '', '']);
+    }
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(issues), 'Issues');
+
+    // Sheet 4 - Summary
+    const summary = [
+        ['Metric', 'Value'],
+        ['Total Runtime', formData.totalRuntime],
+        ['Total Downtime', formData.totalDowntime],
+        ['OEE', formData.oee],
+        ['Availability Rate', formData.availabilityRate],
+        ['Performance Rate', formData.performanceRate],
+        ['Quality Rate', formData.qualityRate],
+        ['Total Counter Reading', formData.totalCounterReading],
+        ['IMA Reel Waste', formData.imaReelWaste],
+        ['IMA Rejected Reel', formData.imaRejectedReel],
+        ['Operator', `${formData.operatorFirstName} ${formData.operatorLastName}`],
+        ['Incoming Operator', `${formData.incomingFirstName} ${formData.incomingLastName}`],
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary), 'Summary');
+
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(data, 'IMA_Pack_Report.xlsx');
+};

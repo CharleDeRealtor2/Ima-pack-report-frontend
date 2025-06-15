@@ -1,22 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './FormWrapper.css';
+import Spinner from './components/Spinner.jsx';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-const Page3 = ({ formData, handleChange, handleSubmit, goBack }) => {
-  const onSubmit = (e) => {
+const Page3 = ({ formData, handleChange, handleSubmit, goBack, setLoading }) => {
+  const [downloading, setDownloading] = useState(false);
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    handleSubmit();
+    await handleSubmit();
   };
 
   const logout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/login'; // Redirect to login
+    window.location.href = '/login';
   };
 
   const downloadFile = async (type) => {
     const token = localStorage.getItem('token');
     const url = `${API_BASE_URL}/export/${type}`;
+    setDownloading(true);
 
     try {
       const response = await fetch(url, {
@@ -39,11 +43,15 @@ const Page3 = ({ formData, handleChange, handleSubmit, goBack }) => {
     } catch (error) {
       alert('Failed to download file. Please try again.');
       console.error(error);
+    } finally {
+      setDownloading(false);
     }
   };
 
   return (
     <>
+      {(downloading) && <Spinner />}
+
       <form className="form-wrapper" onSubmit={onSubmit}>
         <h2>Performance Summary</h2>
 
@@ -173,14 +181,12 @@ const Page3 = ({ formData, handleChange, handleSubmit, goBack }) => {
         </div>
       </form>
 
-      {/* Download Buttons */}
       <div style={{ marginTop: '2rem', textAlign: 'center' }}>
         <h3>Download Report</h3>
         <button onClick={() => downloadFile('pdf')} style={styles.button}>Download PDF</button>
         <button onClick={() => downloadFile('excel')} style={styles.button}>Download Excel</button>
       </div>
 
-      {/* Logout Button */}
       <div style={{ marginTop: '2rem', textAlign: 'center' }}>
         <button onClick={logout} style={styles.logoutButton}>Logout</button>
       </div>

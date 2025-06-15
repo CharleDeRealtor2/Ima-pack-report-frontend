@@ -1,15 +1,18 @@
-// src/Register.jsx
+// Register.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import Spinner from './Spinner';
 
 const Register = ({ goToLogin }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await axios.post('https://ima-pack-report-backend.onrender.com/api/auth/register', {
         fullName,
@@ -17,10 +20,12 @@ const Register = ({ goToLogin }) => {
         password,
       });
       alert('Registration successful. You can now login.');
-      if (goToLogin) goToLogin(); // Optional callback
+      if (goToLogin) goToLogin();
     } catch (err) {
       console.error('Registration error:', err.response?.data || err.message);
       alert('Registration failed: ' + (err.response?.data?.msg || 'Please try again.'));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,9 +60,11 @@ const Register = ({ goToLogin }) => {
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          disabled={loading}
         >
-          Register
+          {loading ? 'Registering...' : 'Register'}
         </button>
+        {loading && <Spinner />}
         <p className="text-sm text-center">
           Already have an account?{' '}
           <Link to="/login" className="text-blue-600 hover:underline">
